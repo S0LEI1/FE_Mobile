@@ -5,7 +5,7 @@ import MessageItem from './MessageItem'
 
 const MessageOutput = ({listMessages}) => {
   function renderMessage(itemData){
-    return <MessageItem {...itemData.item} />
+    return <MessageItem {...itemData.item} type={itemData.item.type} />
   }
   return (
     <FlatList data={listMessages} key={(item) => item._id} renderItem={renderMessage} />

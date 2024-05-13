@@ -38,7 +38,8 @@ const LoginForm = () => {
   }
   async function loginWithPhoneNumberHandler() {
     dispatch(loginHandler(inputValues));
-    navigation.navigate("Home");
+    if(authToken.token)
+      navigation.navigate("Home");
   }
   return (
     <View style={styles.container}>

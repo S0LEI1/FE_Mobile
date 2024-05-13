@@ -2,15 +2,15 @@ import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchMessages, sendMessage } from "../../redux/MessageSlice";
-import { sendMessageAPI } from "../../utils/api/MessageAPI";
-import openSocket from 'socket.io-client'
+import { fetchMessages, sendFileMessage, sendMessage } from "../../redux/MessageSlice";
+import * as ImagePicker from 'expo-image-picker';
+import { sendFileMessageAPI } from "../../utils/api/MessageAPI";
 const MessageInput = ({ conversationId }) => {
   const conversationSelecter = useSelector((state) => state.conversations);
   const messageSelecter = useSelector((state) => state.messages);
-  // console.log(conversationSelecter);
   const dispatch = useDispatch();
   const [content, setContent] = useState("");
+  const [selectedImage, setSelectedImage] = useState(null);
   function setContentHandler(enteredValue) {
     setContent(enteredValue);
   }
@@ -22,6 +22,24 @@ const MessageInput = ({ conversationId }) => {
     dispatch(sendMessage(params));
     setContent("");
   }
+  const pickImageAsync = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      // allowsEditing: true,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setSelectedImage(result.assets[0].uri);
+      const params ={
+        conversationId: conversationId,
+        files: result.assets[0]
+      }
+      dispatch(sendFileMessage(params));
+    } else {
+      alert('You did not select any image.');
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Pressable style={styles.button}>
@@ -30,7 +48,7 @@ const MessageInput = ({ conversationId }) => {
       <View style={styles.inputContainer}>
         <TextInput placeholder="Tin nhắn" value={content} onChangeText={setContentHandler} />
       </View>
-      <Pressable style={styles.button}>
+      <Pressable onPress={pickImageAsync} style={styles.button}>
         <Ionicons size={24} name="image-outline" />
       </Pressable>
       <Pressable
