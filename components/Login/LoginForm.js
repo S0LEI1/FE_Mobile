@@ -1,4 +1,4 @@
-import { Alert, StyleSheet, Text, View } from "react-native";
+import { Alert, StyleSheet, Text, View, Image } from "react-native";
 import React, { useEffect, useState } from "react";
 import Input from "../UI/Input";
 import Button from "../UI/Button";
@@ -38,11 +38,12 @@ const LoginForm = () => {
   }
   async function loginWithPhoneNumberHandler() {
     dispatch(loginHandler(inputValues));
-    if(authToken.token)
+    if (authToken.token)
       navigation.navigate("Home");
   }
   return (
     <View style={styles.container}>
+      <Image style={styles.imageLogo} source={require('../../assets/LOGO.png')} />
       <Input
         title={"Phone number: "}
         placeholder={"Enter your phone number"}
@@ -71,5 +72,12 @@ const styles = StyleSheet.create({
   container: {
     width: "100%",
     alignItems: "center",
+
   },
+  imageLogo: {
+    width: 140,
+    height: 140,
+    backgroundColor: '#F2F2F2',
+    marginBottom: 30
+  }
 });

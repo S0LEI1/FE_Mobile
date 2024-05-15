@@ -23,6 +23,7 @@ const styles = StyleSheet.create({
     margin: 18,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: 'white'
   },
   titleContainer: {
     justifyContent: "center",

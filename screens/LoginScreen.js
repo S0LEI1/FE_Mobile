@@ -3,16 +3,13 @@ import React from "react";
 import Input from "../components/UI/Input";
 import LoginForm from "../components/Login/LoginForm";
 
-const LoginScreen = ({navigation}) => {
+const LoginScreen = ({ navigation }) => {
   return (
     <View style={styles.root}>
-      <View style={styles.titleContainer}>
-        <Text style={styles.signIn}>Sign in</Text>
-        <Text>Sign In Your Account</Text>
-      </View>
+
       <LoginForm />
-      <Pressable onPress={() => navigation.navigate("Signup")}>
-        <Text>Don't have an account</Text>
+      <Pressable style={{ marginTop: 20 }} onPress={() => navigation.navigate("Signup")}>
+        <Text>Do not have an account? <Text style={styles.registerText}> register</Text></Text>
       </Pressable>
     </View>
   );
@@ -27,6 +24,7 @@ const styles = StyleSheet.create({
     margin: 18,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: 'white'
   },
   titleContainer: {
     justifyContent: "center",
@@ -37,5 +35,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     color: "blue",
+  },
+  registerText: {
+    color: 'blue', // Màu chữ cho "register"
+    textDecorationLine: 'underline', // Gạch chân chữ "register"
+    fontWeight: 'bold', // Tùy chọn: Đậm chữ "register"
   },
 });
