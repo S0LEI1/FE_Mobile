@@ -2,11 +2,11 @@ import { Alert, StyleSheet, Text, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import Input from "../UI/Input";
 import Button from "../UI/Button";
-import { login } from "../../utils/api/LoginAPI";
+import { login, loginAPI } from "../../utils/api/LoginAPI";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
-import { loginHandler } from "../../redux/authSlice";
+import LoadingOverlay from "../UI/LoadingOverlay";
 const LoginForm = () => {
   const navigation = useNavigation();
   const [inputValues, setInputValues] = useState({
@@ -14,10 +14,12 @@ const LoginForm = () => {
     password: "",
   });
   const authToken = useSelector((state) => state.auth);
+  console.log(authToken);
   const dispatch = useDispatch();
   useEffect(() => {
     async function checkLogin() {
       const token = await AsyncStorage.getItem("token");
+      console.log(token);
       try {
         if (token) {
           navigation.replace("Home");
@@ -32,14 +34,16 @@ const LoginForm = () => {
     setInputValues((curInput) => {
       return {
         ...curInput,
-        [inputIdentifier]: enteredValue,
+        [inputIdentifier]: enteredValue,  
       };
     });
   }
-  async function loginWithPhoneNumberHandler() {
-    dispatch(loginHandler(inputValues));
-    if(authToken.token)
+  async function loginWithPhoneNumberHandler(phoneNumber, password) {
+    const token = await loginAPI(phoneNumber, password);
+    await AsyncStorage.setItem("token", token);
+    if(token){
       navigation.navigate("Home");
+    }
   }
   return (
     <View style={styles.container}>
@@ -60,7 +64,7 @@ const LoginForm = () => {
           onChangeText: inputChangeHandler.bind(this, "password"),
         }}
       />
-      <Button title={"Sign in"} onPress={loginWithPhoneNumberHandler} />
+      <Button title={"Sign in"} onPress={loginWithPhoneNumberHandler.bind(this, inputValues.phoneNumber, inputValues.password)} />
     </View>
   );
 };

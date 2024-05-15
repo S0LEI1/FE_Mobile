@@ -1,14 +1,32 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import { FlatList, StyleSheet, Text, View } from "react-native";
+import React from "react";
+import FriendItem from "./FriendItem";
 
-const ListFriend = () => {
+const ListFriend = ({ friends }) => {
+  function renderFriend(itemData) {
+    const item = itemData.item
+    return <FriendItem {...item} />;
+  }
+  const placeholder = (
+    <View>
+      <Text>Not friend</Text>
+    </View>
+  );
   return (
     <View>
-      <Text>Bạn bè</Text>
+      {friends ? (
+        <FlatList
+          data={friends}
+          keyExtractor={(item) => item._id}
+          renderItem={renderFriend}
+        />
+      ) : (
+        placeholder
+      )}
     </View>
-  )
-}
+  );
+};
 
-export default ListFriend
+export default ListFriend;
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({});

@@ -15,6 +15,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchConversations } from "../redux/conversationSlice";
 import ModalUI from "../components/UI/Modal";
 
+import openSocket from 'socket.io-client'
+import { PORT } from "../utils/api/port";
+import { getFriendReqs, getFriends } from "../redux/FriendSlice";
+
 const HomeScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation();
@@ -26,7 +30,6 @@ const HomeScreen = () => {
       headerLeft: () => <Text>Tin nhắn</Text>,
       headerRight: (color, size) => (
         <View style={styles.headerRight}>
-          <Ionicons name="chatbox-ellipses-outline" size={24} color={color} />
           <Ionicons
             name="add"
             size={24}
@@ -43,7 +46,17 @@ const HomeScreen = () => {
       dispatch(fetchConversations());
     }
     fetchConversationHandler();
-  }, []);
+  }, [navigation]);
+  const socket = openSocket(PORT);
+  useLayoutEffect(()=>{
+    socket.on("create-single-conversation", (data) => {
+      if (data.action === "create") {
+        dispatch(fetchConversations())
+        dispatch(getFriends())
+        dispatch(getFriendReqs());
+      }
+    });
+  },[socket, navigation])
   return (
     <View style={styles.container}>
       <ConversationOutput listConversations={conversations.listConversations} />

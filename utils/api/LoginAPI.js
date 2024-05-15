@@ -1,6 +1,7 @@
 import axios from "axios";
 import { PORT } from "./port";
-export async function login(phoneNumber, password) {
+import AsyncStorage from "@react-native-async-storage/async-storage";
+export async function loginAPI(phoneNumber, password) {
   const response = await axios
     .post(PORT + "/auth/login", {
       phoneNumber: phoneNumber,
@@ -15,7 +16,8 @@ export async function login(phoneNumber, password) {
   return token;
 }
 
-export async function getUserById(token) {
+export async function getUserById() {
+  const token = await AsyncStorage.getItem("token");
   const response = await axios
     .get(PORT + "/auth/user", {
       headers: {
@@ -29,3 +31,7 @@ export async function getUserById(token) {
     });
   return response.data.user;
 }
+// export async function logout(){
+//   const token = await AsyncStorage.getItem("token");
+
+// }

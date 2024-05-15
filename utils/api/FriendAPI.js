@@ -2,7 +2,8 @@ import axios from "axios";
 import { PORT } from "./port";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export async function getListFriendRequest(token) {
+export async function getListFriendRequest() {
+  const token = await AsyncStorage.getItem("token");
   const response = await axios
     .get(PORT + "/friend/list/req", {
       headers: {
@@ -17,7 +18,8 @@ export async function getListFriendRequest(token) {
   return response.data.addFriendReqs;
 }
 
-export async function accpetAddFriend(token, id) {
+export async function accpetAddFriendAPI(id) {
+  const token = await AsyncStorage.getItem("token");
   const response = await axios
     .put(
       PORT + "/friend/status/" + id,
@@ -35,21 +37,58 @@ export async function accpetAddFriend(token, id) {
       console.log(error.response.status);
       console.log(error.response.header);
     });
-  return response;
+  console.log(response.data.conversation);
+  return response.data.conversation;
 }
 
-
-export async function findFriendByPhone(phoneNumber){
+export async function findFriendByPhone(phoneNumber) {
   const token = await AsyncStorage.getItem("token");
-  const response = await axios.get(PORT +"/friend/find/" + phoneNumber,{
-    headers:{
-      Authorization: `Bearer ${token}`,
-    }
-  }).catch(function (error) {
-    console.log(error.response.data);
-    console.log(error.response.status);
-    console.log(error.response.header);
-  });
-  console.log(response.data);
-  return response.data;
+  const response = await axios
+    .get(PORT + "/friend/find/" + phoneNumber, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .catch(function (error) {
+      console.log(error.response.data);
+      console.log(error.response.status);
+      console.log(error.response.header);
+    });
+  return response.data.friend;
+}
+
+export async function addFriendAPI(id, content) {
+  const token = await AsyncStorage.getItem("token");
+  const response = await axios
+    .post(
+      PORT + "/friend/add/" + id,
+      { content: content },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+    .catch(function (error) {
+      console.log(error.response.data);
+      console.log(error.response.status);
+      console.log(error.response.header);
+    });
+  return response.data.addFriend;
+}
+
+export async function getFriendsAPI() {
+  const token = await AsyncStorage.getItem("token");
+  const response = await axios
+    .get(PORT + "/friend/list", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .catch(function (error) {
+      console.log(error.response.data);
+      console.log(error.response.status);
+      console.log(error.response.header);
+    });
+  return response.data.friends;
 }

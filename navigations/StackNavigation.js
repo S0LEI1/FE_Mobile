@@ -7,9 +7,11 @@ import LoginScreen from "../screens/LoginScreen";
 import HomeScreen from "../screens/HomeScreen";
 import BottomNavigation from "./BottomNavigation";
 import ChatScreen from "../screens/ChatScreen";
-import ModalUI from "../components/UI/Modal";
+import UserInfo from "../screens/UserInfo";
+import FindFriend from "../screens/FindFriend";
 import AddFriend from "../screens/AddFriend";
 const Stack = createNativeStackNavigator();
+
 const StackNavigation = () => {
   return (
     <NavigationContainer>
@@ -18,9 +20,11 @@ const StackNavigation = () => {
         <Stack.Screen name="Signup" component={RegisterScreen} options={{headerShown: false}} />
         <Stack.Screen name="Home" component={BottomNavigation} options={{headerShown:false}} />
         <Stack.Screen name="Chat" component={ChatScreen} />
-        <Stack.Screen name="AddFriend" component={AddFriend} options={{
+        <Stack.Screen name="FindFriend" component={FindFriend} options={{
           presentation:"modal"
         }} />
+        <Stack.Screen name="UserInfo" component={UserInfo} />
+        <Stack.Screen name="AddFriend" component={AddFriend} />
       </Stack.Navigator>
     </NavigationContainer>
   );

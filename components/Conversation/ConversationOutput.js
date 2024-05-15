@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import ConversationItem from "./ConversationItem";
 import { useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getConversationById } from "../../utils/api/ConversationAPI";
+import { getConversationById, getConversationByIdAPI } from "../../utils/api/ConversationAPI";
 import { useDispatch, useSelector } from "react-redux";
 import { getConversation } from "../../redux/conversationSlice";
 import LoadingOverlay from "../UI/LoadingOverlay";
@@ -14,9 +14,9 @@ const ConversationOutput = ({ listConversations }) => {
   const dispatch = useDispatch();
   async function getConversationHandler(conversationId) {
     dispatch(getConversation(conversationId));
-    if (conversations.isLoader === true) {
-      return <LoadingOverlay />;
-    }
+    // if (conversations.isLoader === true) {
+    //   return <LoadingOverlay />;
+    // }
     if (conversations.isLoader === false && conversations.isError === true) {
       Alert.alert("Erorr", "Could not get conversation");
       return;

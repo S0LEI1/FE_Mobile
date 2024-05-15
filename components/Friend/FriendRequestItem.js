@@ -1,16 +1,19 @@
 import { Button, Image, StyleSheet, Text, View } from "react-native";
 import React from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { accpetAddFriend } from "../../utils/api/FriendAPI";
 import { useNavigation } from "@react-navigation/native";
+import { useDispatch, useSelector } from "react-redux";
+import { accpetAddFriend } from "../../redux/FriendSlice";
 
 const FriendRequestItem = ({ id, name, avatar, content }) => {
   const navigation = useNavigation();
-  async function acceptHandler() {
+  const friendSelector = useSelector((state) => state.friends);
+  const dispatch = useDispatch();
+  async function acceptAddFriendHandler() {
     try {
-      const token = await AsyncStorage.getItem("token");
-      await accpetAddFriend(token, id);
-      navigation.navigate("Chat")
+      dispatch(accpetAddFriend(id));
+      if (friendSelector.isLoader === false && friendSelector.isError === false)
+        navigation.navigate("Home", {screen: "Tin nhắn"});
     } catch (error) {
       console.log(error);
     }
@@ -26,7 +29,7 @@ const FriendRequestItem = ({ id, name, avatar, content }) => {
           <Text>{content}</Text>
         </View>
       </View>
-      <Button title="Chấp nhận" onPress={acceptHandler} />
+      <Button title="Chấp nhận" onPress={acceptAddFriendHandler} />
     </View>
   );
 };

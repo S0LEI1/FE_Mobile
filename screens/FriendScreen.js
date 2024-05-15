@@ -2,24 +2,37 @@ import { StyleSheet, Text, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import FriendRequestOutput from "../components/Friend/FriendRequestOutput";
 import ListFriend from "../components/Friend/ListFriend";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getListFriendRequest } from "../utils/api/FriendAPI";
-import openSocket from 'socket.io-client'
+import openSocket from "socket.io-client";
+import { useDispatch, useSelector } from "react-redux";
+import { getFriendReqs, getFriends } from "../redux/FriendSlice";
 import { PORT } from "../utils/api/port";
-const FriendScreen = () => {
-    const [listReqs, setListReqs] = useState([]);
+import { getFriendsAPI } from "../utils/api/FriendAPI";
+const FriendScreen = ({navigation}) => {
+  const friendSelector = useSelector((state) => state.friends);
+  console.log(friendSelector);
+  const dispatch = useDispatch();
   useEffect(() => {
-    async function fetchListRequest() {
-      const token = await AsyncStorage.getItem("token");
-      const listReqs = await getListFriendRequest(token);
-      setListReqs(listReqs)
+    async function getFriendReqsHandler() {
+      dispatch(getFriendReqs());
     }
-    fetchListRequest();
-  }, []);
+    async function getFriendsHandler() {
+      dispatch(getFriends());
+    }
+    getFriendsHandler();
+    getFriendReqsHandler();
+  }, [navigation]);
+  const socket = openSocket(PORT);
+  useEffect(() => {
+    socket.on("addFriend", (data) => {
+      if (data.action === "create") {
+        dispatch(getFriendReqs());
+      }
+    });
+  }, [socket]);
   return (
     <View style={styles.container}>
-      <FriendRequestOutput listRequest={listReqs} />
-      <ListFriend />
+      <FriendRequestOutput listRequest={friendSelector?.friendReqs} />
+      <ListFriend friends={friendSelector?.friends} />
     </View>
   );
 };
@@ -27,8 +40,8 @@ const FriendScreen = () => {
 export default FriendScreen;
 
 const styles = StyleSheet.create({
-  container:{
+  container: {
     margin: 12,
-    backgroundColor:"white"
-  }
+    backgroundColor: "white",
+  },
 });

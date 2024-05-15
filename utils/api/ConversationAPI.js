@@ -22,7 +22,7 @@ export async function getConversationByUserId() {
 export async function getConversationByIdAPI(id) {
   const token = await AsyncStorage.getItem("token");
   const response = await axios
-    .get(PORT + "/conversation/con/" + id, {
+    .get(PORT + "/conversation/" + id, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -32,6 +32,10 @@ export async function getConversationByIdAPI(id) {
       console.log(error.response.status);
       console.log(error.response.header);
     });
-    const conversation =response.data.conversation
+    const conversation ={
+      _id: response.data.conversation._id,
+      type: response.data.conversation.type,
+      name: response.data.conversation.chatName ? response.data.conversation.chatName : response.data.nameAndAvatar.name
+    }
   return conversation;
 }

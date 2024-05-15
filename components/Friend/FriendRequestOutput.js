@@ -5,7 +5,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { accpetAddFriend } from "../../utils/api/FriendAPI";
 
 const FriendRequestOutput = ({ listRequest }) => {
-  console.log(listRequest);
   function renderRequest(itemData) {
     const item = itemData.item;
     return (
@@ -30,7 +29,7 @@ const FriendRequestOutput = ({ listRequest }) => {
       <Text style={styles.title}>Lời mời kết bạn</Text>
       <FlatList
         data={listRequest}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item._id}
         renderItem={renderRequest}
       />
     </View>

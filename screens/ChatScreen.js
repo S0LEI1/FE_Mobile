@@ -9,13 +9,19 @@ import { fetchMessages, sendMessage } from "../redux/MessageSlice";
 import { fetchMessagesAPI } from "../utils/api/MessageAPI";
 import LoadingOverlay from "../components/UI/LoadingOverlay";
 import openSocket from "socket.io-client";
+import { PORT } from "../utils/api/port";
+import { getConversation } from "../redux/conversationSlice";
 const ChatScreen = ({ route }) => {
   const conversationSelecter = useSelector((state) => state.conversations);
-  const dispatch = useDispatch();
-  const chatName = conversationSelecter.conversation.chatName;
-  const navigation = useNavigation();
-  const conversationId = route.params?.conversationId;
   const messageSelecter = useSelector((state) => state.messages);
+  console.log(conversationSelecter.conversation);
+  const dispatch = useDispatch();
+  const chatName = conversationSelecter.conversation?.name;
+  const navigation = useNavigation();
+  const conversationIdFromRoute = route.params?.conversationId ;
+  const conversationId = conversationIdFromRoute ? conversationIdFromRoute : conversationSelecter.conversation?._id;
+  console.log("conversationIdFromRoute", conversationIdFromRoute);
+  // console.log("conversation from redux", conversationSelecter.conversation._id);
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: chatName,
@@ -29,30 +35,39 @@ const ChatScreen = ({ route }) => {
     });
   }, [conversationSelecter, chatName]);
   useEffect(() => {
-    function fetchMessagesHandler() {
+    async function fetchMessagesHandler() {
       if (messageSelecter.isLoader === true) {
         return <LoadingOverlay />;
       }
-      dispatch(fetchMessages(conversationId));
-      console.log("messageSelecter", messageSelecter);
+      if(conversationId !== undefined){
+        dispatch(fetchMessages(conversationId));
+      }
     }
     fetchMessagesHandler();
-  }, []);
-  useEffect(()=>{
-    const socket = openSocket('http://192.168.195.210:8000');
-    socket.on('message', (data)=>{
-       if(data.action ==="create"){
-          dispatch(fetchMessages(conversationId))
-       }
-    },
-    )
-  },[])
+  }, [conversationId, navigation]);
+  const socket = openSocket(PORT);
+  useLayoutEffect(() => {
+    socket.on("message", (data) => {
+      if (data.action === "create") {
+        dispatch(fetchMessages(conversationId));
+      }
+    });
+  }, [socket]);
+  // useLayoutEffect(()=>{
+  //   socket.on("create-single-conversation", (data) => {
+  //     if (data.action === "create") {
+  //       dispatch(getConversation(data.conversation._id));
+  //       dispatch(fetchMessages(data.conversation._id));
+  //       console.log(conversationSelecter);
+  //     }
+  //   });
+  // },[socket, navigation])
   return (
     <View style={styles.container}>
       <View style={styles.messageContainer}>
         <MessageOutput listMessages={messageSelecter.listMessage} />
       </View>
-      <MessageInput conversationId={conversationSelecter.conversation._id} />
+      <MessageInput />
     </View>
   );
 };

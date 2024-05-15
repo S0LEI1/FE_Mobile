@@ -6,7 +6,7 @@ const ModalUI = () => {
   const [modalVisible, setModalVisible] = useState(true);
   const navigation = useNavigation()
   function addFriendHandler(){
-    navigation.navigate("AddFriend")
+    navigation.navigate("FindFriend")
   }
   return (
     <View style={styles.centeredView}>

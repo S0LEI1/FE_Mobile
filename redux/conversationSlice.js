@@ -40,10 +40,10 @@ const ConversationSlice = createSlice({
     });
     builder.addCase(fetchConversations.fulfilled, (state, action) => {
       state.isLoader = false;
-      const conversations = action.payload;
-      for (const con of conversations) {
-        state.listConversations.push(con);
-      }
+      state.listConversations = action.payload;
+      // for (const con of conversations) {
+      //   state.listConversations.push(con);
+      // }
     });
     builder.addCase(fetchConversations.rejected, (state, action) => {
       state.isLoader = false;
