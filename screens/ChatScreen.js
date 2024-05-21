@@ -5,23 +5,31 @@ import { Ionicons } from "@expo/vector-icons";
 import MessageOutput from "../components/Message/MessageOutput";
 import MessageInput from "../components/Message/MessageInput";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchMessages, sendMessage } from "../redux/MessageSlice";
+import { addMessage, fetchMessages, sendMessage } from "../redux/MessageSlice";
 import { fetchMessagesAPI } from "../utils/api/MessageAPI";
 import LoadingOverlay from "../components/UI/LoadingOverlay";
-import openSocket from "socket.io-client";
 import { PORT } from "../utils/api/port";
 import { getConversation } from "../redux/conversationSlice";
+import { jwtDecode } from "jwt-decode";
+import openSocket from "socket.io-client";
+import MessageModal from "../components/UI/MessageModal";
 const ChatScreen = ({ route }) => {
   const conversationSelecter = useSelector((state) => state.conversations);
   const messageSelecter = useSelector((state) => state.messages);
-  console.log(conversationSelecter.conversation);
+  const userSelector = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const chatName = conversationSelecter.conversation?.name;
   const navigation = useNavigation();
-  const conversationIdFromRoute = route.params?.conversationId ;
-  const conversationId = conversationIdFromRoute ? conversationIdFromRoute : conversationSelecter.conversation?._id;
-  console.log("conversationIdFromRoute", conversationIdFromRoute);
-  // console.log("conversation from redux", conversationSelecter.conversation._id);
+  const conversationIdFromRoute = route.params?.conversationId;
+  const conversationId = conversationIdFromRoute
+    ? conversationIdFromRoute
+    : conversationSelecter.conversation?._id;
+  const socket = openSocket(PORT);
+  function leaveConversationHandler(){
+    navigation.pop();
+    socket.emit("leave-conversation", conversationId);
+    socket.close();
+  }
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: chatName,
@@ -32,42 +40,49 @@ const ChatScreen = ({ route }) => {
           <Ionicons name="menu" size={24} />
         </View>
       ),
+      headerLeft: (color) => (
+        <Ionicons
+          name="arrow-back"
+          size={24}
+          color={color}
+          onPress={leaveConversationHandler}
+        />
+      ),
     });
-  }, [conversationSelecter, chatName]);
+  }, [navigation]);
   useEffect(() => {
     async function fetchMessagesHandler() {
-      if (messageSelecter.isLoader === true) {
+      if (messageSelecter.isLoading === true) {
         return <LoadingOverlay />;
       }
-      if(conversationId !== undefined){
+      if (conversationId !== undefined) {
         dispatch(fetchMessages(conversationId));
       }
     }
     fetchMessagesHandler();
-  }, [conversationId, navigation]);
-  const socket = openSocket(PORT);
-  useLayoutEffect(() => {
+  }, []);
+  useEffect(() => {
     socket.on("message", (data) => {
+      dispatch(addMessage(data?.message));
+    });
+
+
+    
+    socket.on("create-single-conversation", (data) => {
       if (data.action === "create") {
-        dispatch(fetchMessages(conversationId));
+        dispatch(getConversation(data.conversation._id));
+        dispatch(fetchMessages(data.conversation._id));
+        console.log("1", conversationSelecter);
       }
     });
-  }, [socket]);
-  // useLayoutEffect(()=>{
-  //   socket.on("create-single-conversation", (data) => {
-  //     if (data.action === "create") {
-  //       dispatch(getConversation(data.conversation._id));
-  //       dispatch(fetchMessages(data.conversation._id));
-  //       console.log(conversationSelecter);
-  //     }
-  //   });
-  // },[socket, navigation])
+  }, []);
   return (
     <View style={styles.container}>
-      <View style={styles.messageContainer}>
-        <MessageOutput listMessages={messageSelecter.listMessage} />
-      </View>
-      <MessageInput />
+      <MessageOutput
+        listMessages={messageSelecter.listMessage}
+        currentUserId={userSelector.userId}
+      />
+      <MessageInput conversationId={conversationId} />
     </View>
   );
 };
@@ -82,11 +97,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     gap: 8,
-  },
-  messageContainer: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: "black",
   },
   inputContainer: {
     flex: 1,

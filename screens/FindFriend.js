@@ -13,7 +13,7 @@ const FindFriend = ({navigation}) => {
     }
     async function findFriendHandler(){
         dispatch(getFriendByPhoneNumber(phoneNumber))
-        if(friendSelector.isLoader === false && friendSelector.isError === false){
+        if(friendSelector.isLoading === false && friendSelector.isError === false){
           navigation.navigate("UserInfo")
         }
     }
