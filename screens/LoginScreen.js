@@ -3,7 +3,7 @@ import React from "react";
 import Input from "../components/UI/Input";
 import LoginForm from "../components/Login/LoginForm";
 
-const LoginScreen = ({navigation}) => {
+const LoginScreen = ({ navigation }) => {
   return (
     <View style={styles.root}>
       <View style={styles.titleContainer}>
@@ -11,7 +11,7 @@ const LoginScreen = ({navigation}) => {
         <Text>Sign In Your Account</Text>
       </View>
       <LoginForm />
-      <Pressable onPress={() => navigation.navigate("Signup")}>
+      <Pressable onPress={() => navigation.navigate("RegisterForm")}>
         <Text>Don't have an account</Text>
       </Pressable>
     </View>
