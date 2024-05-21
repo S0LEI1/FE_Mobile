@@ -4,8 +4,11 @@ import { Ionicons } from "@expo/vector-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchMessages, sendFileMessage, sendMessage } from "../../redux/MessageSlice";
 import * as ImagePicker from 'expo-image-picker';
-import { sendFileMessageAPI } from "../../utils/api/MessageAPI";
+import { sendFileMessageAPI, sendMessageAPI } from "../../utils/api/MessageAPI";
+import openSocket from 'socket.io-client'
+import { PORT } from "../../utils/api/port";
 const MessageInput = ({ conversationId }) => {
+  const socket = openSocket(PORT);
   const conversationSelecter = useSelector((state) => state.conversations);
   const messageSelecter = useSelector((state) => state.messages);
   const dispatch = useDispatch();
@@ -15,11 +18,12 @@ const MessageInput = ({ conversationId }) => {
     setContent(enteredValue);
   }
   async function sendMessageHandler() {
-    const params ={
-      conversationId: conversationSelecter.conversation._id,
-      content: content
-    }
-    dispatch(sendMessage(params));
+    // const params ={
+    //   conversationId: conversationSelecter.conversation._id,
+    //   content: content
+    // }
+    const message = await sendMessageAPI(conversationId, content);
+    // socket.emit("message", {conversationId, message})
     setContent("");
   }
   const pickImageAsync = async () => {

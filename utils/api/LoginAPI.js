@@ -13,10 +13,11 @@ export async function loginAPI(phoneNumber, password) {
       console.log(error.response.header);
     });
   const token = response.data.token;
-  return token;
+  const userId = response.data.userId;
+  return {token, userId};
 }
 
-export async function getUserById() {
+export async function getUserByIdAPI() {
   const token = await AsyncStorage.getItem("token");
   const response = await axios
     .get(PORT + "/auth/user", {

@@ -9,10 +9,7 @@ const FriendRequestOutput = ({ listRequest }) => {
     const item = itemData.item;
     return (
       <FriendRequestItem
-        avatar={item.sender.avatar}
-        name={item.sender.name}
-        content={item.content}
-        id={item._id}
+        {...item}
       />
     );
   }
