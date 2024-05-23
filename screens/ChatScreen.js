@@ -5,7 +5,11 @@ import { Ionicons } from "@expo/vector-icons";
 import MessageOutput from "../components/Message/MessageOutput";
 import MessageInput from "../components/Message/MessageInput";
 import { useDispatch, useSelector } from "react-redux";
-import { addMessage, deleteMessage, fetchMessages } from "../redux/MessageSlice";
+import {
+  addMessage,
+  deleteMessage,
+  fetchMessages,
+} from "../redux/MessageSlice";
 import LoadingOverlay from "../components/UI/LoadingOverlay";
 import { PORT } from "../utils/api/port";
 import { getConversation } from "../redux/conversationSlice";
@@ -23,7 +27,7 @@ const ChatScreen = ({ route }) => {
     ? conversationIdFromRoute
     : conversationSelecter.conversation?._id;
   const socket = openSocket(PORT);
-  function leaveConversationHandler(){
+  function leaveConversationHandler() {
     navigation.pop();
     socket.emit("leave-conversation", conversationId);
     socket.close();
@@ -61,14 +65,17 @@ const ChatScreen = ({ route }) => {
   }, []);
   useEffect(() => {
     socket.on("message", (data) => {
-      if(data.action ==="create" && data.conversationId === conversationId)
-      dispatch(addMessage(data?.message));
-    if(data.action ==="delete" && data.conversationId === conversationId)
-      dispatch(deleteMessage(data?.message))
+      if (data.action === "create" && data.conversationId === conversationId)
+        dispatch(addMessage(data?.message));
+      if (data.action === "delete" && data.conversationId === conversationId)
+        dispatch(deleteMessage(data?.message));
     });
+    socket.on("share-message", (data)=>{
+      if(data.action ==="create" && data.conversationId === conversationId){
+        dispatch(fetchMessages(data.conversationId));
+      }
+    })
 
-
-    
     socket.on("create-single-conversation", (data) => {
       if (data.action === "create") {
         dispatch(getConversation(data.conversation._id));

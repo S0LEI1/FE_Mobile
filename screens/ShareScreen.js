@@ -19,13 +19,14 @@ const ShareScreen = ({ navigation }) => {
     (state) => state.messages.shareConversation
   );
   const shareMessage = useSelector((state) => state.messages.shareMessage);
-  const shareConversationId = shareConversation.map(conversation => conversation._id);
+  const shareConversationId = shareConversation.map(conversation => conversation.conversationId);
   async function shareMessageHandler(){
-    console.log(shareMessage._id);
     for (let index = 0; index < shareConversationId.length; index++) {
-        console.log(shareConversationId[index]);
-        // await shareMessageAPI(shareMessage._id, shareConversationId[index])        
+      console.log("share con id", shareConversationId[index]);
+        await shareMessageAPI(shareMessage._id, shareConversationId[index])        
     }
+    dispatch(resetShare());
+    navigation.pop();
   }
   function leaveShareHandler() {
     dispatch(resetShare());
@@ -50,6 +51,7 @@ const ShareScreen = ({ navigation }) => {
       <ShareConversation
         style={styles.shareConversationContainer}
         conversations={conversations}
+        title={"Gần đây"}
       />
       {shareConversation.length >= 1 && (
         <ShareOutput

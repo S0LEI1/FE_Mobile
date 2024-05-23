@@ -2,6 +2,22 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 import { PORT } from "./port";
 
+export async function shareMessageAPI(messageId, conversationId) {
+  const token = await AsyncStorage.getItem("token");
+  const response = await axios.post(
+    PORT+"/message/"+messageId+"/share/"+ conversationId,
+    {},
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  );
+  const shareMessage = response.data.shareMessage;
+  console.log(shareMessage);
+  return shareMessage;
+}
+
 export async function fetchMessagesAPI(conversationId) {
   const token = await AsyncStorage.getItem("token");
   const response = await axios
@@ -62,14 +78,11 @@ export async function sendFileMessageAPI(conversationId, files) {
 export async function deleteMessageAPI(messageId) {
   try {
     const token = await AsyncStorage.getItem("token");
-    const response = await axios.delete(
-      PORT + "/message/delete/" + messageId,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
+    const response = await axios.delete(PORT + "/message/delete/" + messageId, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     const deleteMessage = response.data.deleteMessage;
     console.log(deleteMessage);
     return deleteMessage;
@@ -90,24 +103,6 @@ export async function deleteMessageOnlyMeAPI(messageId) {
     );
     const deleteMessage = response.data.deleteMessage;
     return deleteMessage;
-  } catch (error) {
-    console.log(error);
-  }
-}
-export async function shareMessageAPI(messageId, conversationId){
-  try {
-    const token = await AsyncStorage.getItem("token");
-    const response = await axios.post(
-      PORT + "/message/" + messageId +"/share/" + conversationId,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    const shareMessage = response.data.shareMessage;
-    console.log(shareMessage);
-    // return shareMessage;
   } catch (error) {
     console.log(error);
   }

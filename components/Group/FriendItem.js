@@ -3,18 +3,18 @@ import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
 import { addShareCovnersation, removeShareConversation } from "../../redux/MessageSlice";
-const ConversationItem = ({name, avatar, conversationId }) => {
+const FriendItem = ({name, avatar, conversationId }) => {
   const [check, setCheck] = useState(false);
   const dispatch = useDispatch();
   function onPressHandler(){
     setCheck(!check);
-    if(!check){
-        const params ={conversationId, avatar}
-        dispatch(addShareCovnersation(params))
-    }
-    if(check){ 
-        dispatch(removeShareConversation(conversationId))
-    }
+    // if(!check){
+    //     const params ={conversationId, avatar}
+    //     dispatch(addShareCovnersation(params))
+    // }
+    // if(check){ 
+    //     dispatch(removeShareConversation(conversationId))
+    // }
   }
   return (
     <Pressable
@@ -41,7 +41,7 @@ const ConversationItem = ({name, avatar, conversationId }) => {
   );
 };
 
-export default ConversationItem;
+export default FriendItem;
 const styles = StyleSheet.create({
   container: {
     padding: 12,

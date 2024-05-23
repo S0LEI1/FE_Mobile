@@ -6,6 +6,7 @@ const ShareOutput = ({ shareData, style, content, fileUrls, type, onPress }) => 
   //   const { content, imageUrls, type } = message;
   //   console.log("message", message);
   function renderShareAvatar(itemData) {
+    console.log(itemData);
     return <AvatarItem {...itemData.item} />;
   }
   return (
@@ -14,7 +15,7 @@ const ShareOutput = ({ shareData, style, content, fileUrls, type, onPress }) => 
         <FlatList
           horizontal
           data={shareData}
-          keyExtractor={(item) => item._id}
+          keyExtractor={(item) => item.conversationId}
           renderItem={renderShareAvatar}
         />
       </View>

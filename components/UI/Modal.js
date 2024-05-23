@@ -8,6 +8,9 @@ const ModalUI = () => {
   function addFriendHandler(){
     navigation.navigate("FindFriend")
   }
+  function createGroupHandler(){
+    navigation.navigate("CreateGroup")
+  }
   return (
     <View style={styles.centeredView}>
       <Modal
@@ -23,8 +26,8 @@ const ModalUI = () => {
               <Ionicons name="person-add-outline" size={16} />
               <Text>Thêm bạn bè</Text>
             </Pressable>
-            <Pressable style={styles.button}>
-            <Ionicons name="people-outline" size={16} />
+            <Pressable style={styles.button} onPress={createGroupHandler} >
+            <Ionicons name="people-outline" size={16}/>
               <Text>Tạo nhóm</Text>
             </Pressable>
           </View>

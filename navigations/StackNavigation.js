@@ -13,6 +13,7 @@ import AddFriend from "../screens/AddFriend";
 import RegisterOPT from "../components/Login/RegisterOTP";
 import RegisterForm from "../components/Login/RegisterForm";
 import ShareScreen from "../screens/ShareScreen";
+import CreateGroup from "../screens/CreateGroup";
 const Stack = createNativeStackNavigator();
 
 const StackNavigation = () => {
@@ -30,6 +31,7 @@ const StackNavigation = () => {
         <Stack.Screen name="UserInfo" component={UserInfo} />
         <Stack.Screen name="AddFriend" component={AddFriend} />
         <Stack.Screen name="ShareScreen" component={ShareScreen} />
+        <Stack.Screen name="CreateGroup" component={CreateGroup} />
       </Stack.Navigator>
     </NavigationContainer>
   );
