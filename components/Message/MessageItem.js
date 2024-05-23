@@ -17,7 +17,13 @@ import TextMessage from "./TextMessage";
 import ImageMessage from "./ImageMessage";
 import MessageModal from "../UI/MessageModal";
 import { Ionicons } from "@expo/vector-icons";
-import { removeMessage } from "../../redux/MessageSlice";
+import { deleteMessageOnlyMe, removeMessage } from "../../redux/MessageSlice";
+import {
+  deleteMessageAPI,
+  deleteMessageOnlyByMeAPI,
+} from "../../utils/api/MessageAPI";
+import DeleteMessage from "./DeleteMessage";
+import IconButton from "../UI/IconButton";
 const MessageItem = ({
   content,
   senderAvatar,
@@ -28,16 +34,28 @@ const MessageItem = ({
   currentUserId,
   updatedAt,
   style,
-  _id
+  isDeleted,
+  deletedUserIds,
+  _id,
 }) => {
   const dispatch = useDispatch();
   const messages = useSelector((state) => state.messages.listMessage);
-  console.log(messages.length);
   const [modalVisible, setModalVisible] = useState(false);
-  function removeMessageHandler(){
-    dispatch(removeMessage(_id));
+  async function removeMessageHandler(id) {
+    try {
+      setModalVisible(!modalVisible);
+      const { deleteMessage, conversationId } = await deleteMessageAPI(id);
+      dispatch(removeMessage(deleteMessage));
+    } catch (error) {
+      console.log(error);
+    }
   }
-  function renderModal() {
+  async function deleteMessageonlyMeHandler(id) {
+    setModalVisible(!modalVisible);
+    await deleteMessageOnlyByMeAPI(id);
+    dispatch(deleteMessageOnlyMe(id));
+  }
+  function renderModal(id, userId, isDeleted) {
     return (
       <View style={styles.centeredView}>
         <Modal
@@ -52,47 +70,30 @@ const MessageItem = ({
           <View style={styles.centeredView}>
             <View style={styles.modalView}>
               <View style={styles.buttonContainer}>
-                <Pressable
-                  style={({ pressed }) => [
-                    styles.button,
-                    pressed && [
-                      styles.pressed,
-                      { borderRadius: 12, backgroundColor: "#3888FF" },
-                    ],
-                  ]}
-                >
-                  <Ionicons
-                    name="arrow-redo-outline"
-                    size={16}
+                {/* Share message */}
+                {!isDeleted && (
+                  <IconButton
+                    icon={"arrow-redo-outline"}
                     color={"#3888FF"}
+                    title={"Chuyển tiếp"}
                   />
-                  <Text>Chuyển tiếp</Text>
-                </Pressable>
-                <Pressable
-                  onPress={removeMessageHandler}
-                  style={({ pressed }) => [
-                    styles.button,
-                    pressed && [
-                      styles.pressed,
-                      { borderRadius: 12, backgroundColor: "#B11B17" },
-                    ],
-                  ]}
-                >
-                  <Ionicons name="reload-outline" size={16} color={"#B11B17"} />
-                  <Text>Thu hồi</Text>
-                </Pressable>
-                <Pressable
-                  style={({ pressed }) => [
-                    styles.button,
-                    pressed && [
-                      styles.pressed,
-                      { borderRadius: 12, backgroundColor: "#FF0000" },
-                    ],
-                  ]}
-                >
-                  <Ionicons name="trash-outline" size={16} color={"#FF0000"} />
-                  <Text>Xóa</Text>
-                </Pressable>
+                )}
+                {/* Delete message */}
+                {(userId === currentUserId && !isDeleted) && (
+                  <IconButton
+                    icon={"reload-outline"}
+                    color={"#B11B17"}
+                    title={"Thu hồi"}
+                    onPress={removeMessageHandler.bind(this, id)}
+                  />
+                )}
+                {/* Delete message only me */}
+                <IconButton
+                  icon={"trash-outline"}
+                  color={"#FF0000"}
+                  title={"Xóa phía bạn"}
+                  onPress={deleteMessageonlyMeHandler.bind(this, id)}
+                />
               </View>
               <Pressable
                 style={[styles.button, styles.buttonClose]}
@@ -107,6 +108,9 @@ const MessageItem = ({
     );
   }
   function onLongPressHandler() {
+    // if (isDeleted === true) {
+    //   return;
+    // }
     setModalVisible(true);
   }
   return (
@@ -121,15 +125,19 @@ const MessageItem = ({
             currentUserId === senderId && styles.reverseMessageContainer,
           ]}
         >
-          <View>
-            {type === "TEXTANDFILE" ? (
-              <ImageMessage imageUrl={fileUrls[0]} />
-            ) : (
-              <TextMessage content={content} />
-            )}
-          </View>
+          {!isDeleted ? (
+            <View>
+              {type === "TEXTANDFILE" ? (
+                <ImageMessage imageUrl={fileUrls[0]} />
+              ) : (
+                <TextMessage content={content} />
+              )}
+            </View>
+          ) : (
+            <DeleteMessage />
+          )}
         </View>
-        {renderModal()}
+        {renderModal(_id, senderId, isDeleted)}
       </View>
     </Pressable>
   );

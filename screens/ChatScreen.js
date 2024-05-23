@@ -5,7 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import MessageOutput from "../components/Message/MessageOutput";
 import MessageInput from "../components/Message/MessageInput";
 import { useDispatch, useSelector } from "react-redux";
-import { addMessage, fetchMessages, sendMessage } from "../redux/MessageSlice";
+import { addMessage, deleteMessage, fetchMessages, sendMessage } from "../redux/MessageSlice";
 import { fetchMessagesAPI } from "../utils/api/MessageAPI";
 import LoadingOverlay from "../components/UI/LoadingOverlay";
 import { PORT } from "../utils/api/port";
@@ -63,7 +63,10 @@ const ChatScreen = ({ route }) => {
   }, []);
   useEffect(() => {
     socket.on("message", (data) => {
+      if(data.action ==="create" && data.conversationId === conversationId)
       dispatch(addMessage(data?.message));
+    if(data.action ==="delete" && data.conversationId === conversationId)
+      dispatch(deleteMessage(data?.message))
     });
 
 

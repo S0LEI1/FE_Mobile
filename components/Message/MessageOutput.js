@@ -9,6 +9,9 @@ import MessageModal from "../UI/MessageModal";
 const MessageOutput = ({ listMessages, style, currentUserId }) => {
   const scrollRef = useRef();
   function renderMessage(itemData) {
+    if(itemData.item.deletedUserIds.includes(currentUserId)){
+      return;
+    }
     return <MessageItem {...itemData.item} currentUserId={currentUserId} />;
   }
   return (

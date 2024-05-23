@@ -38,10 +38,18 @@ const MessageSlice = createSlice({
     addMessage: (state, action) =>{
       state.listMessage.push(action.payload);
     },
-    removeMessage:(state, action) =>{
+    deleteMesssageOnlyMe:(state, action) =>{
       const messageId = action.payload;
       const newList = state.listMessage.filter((message) => message._id !== messageId);
       state.listMessage = newList;
+    },
+    deleteMessage:(state, action) =>{
+      const message = action.payload;
+      const messageId = message._id;
+      const newMessages = [...state.listMessage];
+      const messageDeleteIndex = newMessages.findIndex(message => message._id === messageId);
+      newMessages[messageDeleteIndex] = message;
+      state.listMessage = newMessages;
     }
   },
   extraReducers: (builder) => {
@@ -59,5 +67,5 @@ const MessageSlice = createSlice({
     });
   }
 });
-export const {addMessage, removeMessage} = MessageSlice.actions;
+export const {addMessage, deleteMessage, deleteMesssageOnlyMe} = MessageSlice.actions;
 export default MessageSlice.reducer;

@@ -58,3 +58,32 @@ export async function sendFileMessageAPI(conversationId, files) {
     console.log(error);
   }
 }
+
+export async function deleteMessage(messageId){
+  const token = await AsyncStorage.getItem("token");
+  const response = await axios.post(
+    PORT + "/message/delete/" + messageId,
+    { content: content },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  const deleteMessage = response.data.deleteMessage;
+  return deleteMessage;
+}
+export async function deleteMessageOnlyMe(messageId){
+  const token = await AsyncStorage.getItem("token");
+  const response = await axios.post(
+    PORT + "/message/delete/only/" + messageId,
+    { content: content },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  // const deleteMessage = response.data.deleteMessage;
+  // return deleteMessage;
+}
