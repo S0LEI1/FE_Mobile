@@ -47,8 +47,8 @@ export async function sendFileMessageAPI(conversationId, files) {
       formData,
       {
         headers: {
-          Accept:"application/json",
-          'Content-Type': 'multipart/form-data',
+          Accept: "application/json",
+          "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
         },
       }
@@ -59,31 +59,56 @@ export async function sendFileMessageAPI(conversationId, files) {
   }
 }
 
-export async function deleteMessage(messageId){
-  const token = await AsyncStorage.getItem("token");
-  const response = await axios.post(
-    PORT + "/message/delete/" + messageId,
-    { content: content },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
-  const deleteMessage = response.data.deleteMessage;
-  return deleteMessage;
+export async function deleteMessageAPI(messageId) {
+  try {
+    const token = await AsyncStorage.getItem("token");
+    const response = await axios.delete(
+      PORT + "/message/delete/" + messageId,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    const deleteMessage = response.data.deleteMessage;
+    console.log(deleteMessage);
+    return deleteMessage;
+  } catch (error) {
+    console.log(error);
+  }
 }
-export async function deleteMessageOnlyMe(messageId){
-  const token = await AsyncStorage.getItem("token");
-  const response = await axios.post(
-    PORT + "/message/delete/only/" + messageId,
-    { content: content },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
-  // const deleteMessage = response.data.deleteMessage;
-  // return deleteMessage;
+export async function deleteMessageOnlyMeAPI(messageId) {
+  try {
+    const token = await AsyncStorage.getItem("token");
+    const response = await axios.delete(
+      PORT + "/message/delete/only/" + messageId,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    const deleteMessage = response.data.deleteMessage;
+    return deleteMessage;
+  } catch (error) {
+    console.log(error);
+  }
+}
+export async function shareMessageAPI(messageId, conversationId){
+  try {
+    const token = await AsyncStorage.getItem("token");
+    const response = await axios.post(
+      PORT + "/message/" + messageId +"/share/" + conversationId,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    const shareMessage = response.data.shareMessage;
+    console.log(shareMessage);
+    // return shareMessage;
+  } catch (error) {
+    console.log(error);
+  }
 }

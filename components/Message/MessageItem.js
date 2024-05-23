@@ -17,13 +17,14 @@ import TextMessage from "./TextMessage";
 import ImageMessage from "./ImageMessage";
 import MessageModal from "../UI/MessageModal";
 import { Ionicons } from "@expo/vector-icons";
-import { deleteMessageOnlyMe, removeMessage } from "../../redux/MessageSlice";
+import { deleteMessageOnlyMe, deleteMessage, getShareMessage } from "../../redux/MessageSlice";
 import {
   deleteMessageAPI,
-  deleteMessageOnlyByMeAPI,
+  deleteMessageOnlyMeAPI,
 } from "../../utils/api/MessageAPI";
 import DeleteMessage from "./DeleteMessage";
 import IconButton from "../UI/IconButton";
+import { useNavigation } from "@react-navigation/native";
 const MessageItem = ({
   content,
   senderAvatar,
@@ -41,19 +42,25 @@ const MessageItem = ({
   const dispatch = useDispatch();
   const messages = useSelector((state) => state.messages.listMessage);
   const [modalVisible, setModalVisible] = useState(false);
+  const navigation = useNavigation();
   async function removeMessageHandler(id) {
     try {
       setModalVisible(!modalVisible);
-      const { deleteMessage, conversationId } = await deleteMessageAPI(id);
-      dispatch(removeMessage(deleteMessage));
+      const message = await deleteMessageAPI(id);
+      dispatch(deleteMessage(message));
     } catch (error) {
       console.log(error);
     }
   }
   async function deleteMessageonlyMeHandler(id) {
     setModalVisible(!modalVisible);
-    await deleteMessageOnlyByMeAPI(id);
+    await deleteMessageOnlyMeAPI(id);
     dispatch(deleteMessageOnlyMe(id));
+  }
+  function shareMessageHandler(id){
+    dispatch(getShareMessage(id));
+    navigation.navigate("ShareScreen",{messageId: id})
+    setModalVisible(!modalVisible);
   }
   function renderModal(id, userId, isDeleted) {
     return (
@@ -73,6 +80,7 @@ const MessageItem = ({
                 {/* Share message */}
                 {!isDeleted && (
                   <IconButton
+                    onPress={shareMessageHandler.bind(this, id)}
                     icon={"arrow-redo-outline"}
                     color={"#3888FF"}
                     title={"Chuyển tiếp"}
@@ -127,7 +135,7 @@ const MessageItem = ({
         >
           {!isDeleted ? (
             <View>
-              {type === "TEXTANDFILE" ? (
+              {type === "TEXTANDFILE" || type==="IMAGE" ? (
                 <ImageMessage imageUrl={fileUrls[0]} />
               ) : (
                 <TextMessage content={content} />

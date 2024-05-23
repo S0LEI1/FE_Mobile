@@ -5,14 +5,12 @@ import { Ionicons } from "@expo/vector-icons";
 import MessageOutput from "../components/Message/MessageOutput";
 import MessageInput from "../components/Message/MessageInput";
 import { useDispatch, useSelector } from "react-redux";
-import { addMessage, deleteMessage, fetchMessages, sendMessage } from "../redux/MessageSlice";
-import { fetchMessagesAPI } from "../utils/api/MessageAPI";
+import { addMessage, deleteMessage, fetchMessages } from "../redux/MessageSlice";
 import LoadingOverlay from "../components/UI/LoadingOverlay";
 import { PORT } from "../utils/api/port";
 import { getConversation } from "../redux/conversationSlice";
 import { jwtDecode } from "jwt-decode";
 import openSocket from "socket.io-client";
-import MessageModal from "../components/UI/MessageModal";
 const ChatScreen = ({ route }) => {
   const conversationSelecter = useSelector((state) => state.conversations);
   const messageSelecter = useSelector((state) => state.messages);

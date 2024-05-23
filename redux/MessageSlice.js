@@ -6,15 +6,18 @@ import {
   fetchMessagesAPI,
   sendFileMessageAPI,
 } from "../utils/api/MessageAPI";
-export const sendFileMessage = createAsyncThunk("sendFileMessage", async(params) =>{
-  try {
-    const { conversationId, files } = params;
-    const message = await sendFileMessageAPI(conversationId, files);
-    return message;
-  } catch (error) {
-    console.log(error);
+export const sendFileMessage = createAsyncThunk(
+  "sendFileMessage",
+  async (params) => {
+    try {
+      const { conversationId, files } = params;
+      const message = await sendFileMessageAPI(conversationId, files);
+      return message;
+    } catch (error) {
+      console.log(error);
+    }
   }
-})
+);
 export const fetchMessages = createAsyncThunk(
   "fetchMessages",
   async (params) => {
@@ -33,24 +36,55 @@ const MessageSlice = createSlice({
     selectedMessage: {},
     isLoading: false,
     isError: false,
+    shareConversation: [],
+    shareMessage: {},
   },
-  reducers:{
-    addMessage: (state, action) =>{
+  reducers: {
+    addMessage: (state, action) => {
       state.listMessage.push(action.payload);
     },
-    deleteMesssageOnlyMe:(state, action) =>{
+
+    deleteMessageOnlyMe: (state, action) => {
       const messageId = action.payload;
-      const newList = state.listMessage.filter((message) => message._id !== messageId);
+      const newList = state.listMessage.filter(
+        (message) => message._id !== messageId
+      );
       state.listMessage = newList;
     },
-    deleteMessage:(state, action) =>{
+    deleteMessage: (state, action) => {
       const message = action.payload;
       const messageId = message._id;
-      const newMessages = [...state.listMessage];
-      const messageDeleteIndex = newMessages.findIndex(message => message._id === messageId);
+      const newMessages = state.listMessage;
+      const messageDeleteIndex = newMessages.findIndex(
+        (message) => message._id === messageId
+      );
       newMessages[messageDeleteIndex] = message;
       state.listMessage = newMessages;
-    }
+    },
+    addShareCovnersation(state, action) {
+      const params = action.payload;
+      state.shareConversation.push(params);
+    },
+    removeShareConversation(state, action) {
+      const conversationId = action.payload;
+      const newShareConversation = state.shareConversation.filter(
+        (conversation) => conversation._id !== conversationId
+      );
+      state.shareConversation = [...newShareConversation];
+    },
+    getShareMessage(state, action) {
+      const messageId = action.payload;
+      console.log(messageId);
+      const messageIndex = state.listMessage.findIndex(
+        (message) => message._id.toString() === messageId.toString()
+      );
+      const findMessage = state.listMessage[messageIndex];
+      state.shareMessage = findMessage;
+    },
+    resetShare(state, action) {
+      state.shareConversation = [];
+      state.shareMessage = {};
+    },
   },
   extraReducers: (builder) => {
     // get list
@@ -65,7 +99,15 @@ const MessageSlice = createSlice({
       state.isLoading = false;
       state.isError = true;
     });
-  }
+  },
 });
-export const {addMessage, deleteMessage, deleteMesssageOnlyMe} = MessageSlice.actions;
+export const {
+  addMessage,
+  deleteMessage,
+  deleteMessageOnlyMe,
+  addShareCovnersation,
+  removeShareConversation,
+  getShareMessage,
+  resetShare,
+} = MessageSlice.actions;
 export default MessageSlice.reducer;

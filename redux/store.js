@@ -9,5 +9,6 @@ export const store = configureStore({
         conversations: ConversationReducer,
         friends: FriendReducer,
         messages: MessageReducer
-    }
+    },
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware(),
 })

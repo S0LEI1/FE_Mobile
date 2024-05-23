@@ -7,7 +7,7 @@ import {
   View,
 } from "react-native";
 import React, { useContext, useEffect, useLayoutEffect, useState } from "react";
-import { useNavigation } from "@react-navigation/native";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 
 import ConversationOutput from "../components/Conversation/ConversationOutput";
@@ -19,7 +19,7 @@ import openSocket from "socket.io-client";
 import { PORT } from "../utils/api/port";
 import { getFriendReqs, getFriends } from "../redux/FriendSlice";
 import { getUser } from "../redux/authSlice";
-import { addMessage } from "../redux/MessageSlice";
+import { addMessage, resetShare } from "../redux/MessageSlice";
 
 const HomeScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
@@ -74,10 +74,14 @@ const HomeScreen = () => {
         dispatch(fetchConversations());
       }
     });
-    socket.on("message", (data) => {
-      console.log("data from socket", data);
-    });
+    // socket.on("message", (data) => {
+    //   console.log("data from socket", data);
+    // });
   }, []);
+  const isFocused = useIsFocused();
+  useEffect(()=>{
+    dispatch(resetShare());
+  },[isFocused])
   return (
     <View style={styles.container}>
       <ConversationOutput
