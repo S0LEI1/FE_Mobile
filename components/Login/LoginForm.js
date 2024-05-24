@@ -7,6 +7,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
 import LoadingOverlay from "../UI/LoadingOverlay";
+import { addToken } from "../../redux/authSlice";
 const LoginForm = () => {
   const navigation = useNavigation();
   const [inputValues, setInputValues] = useState({
@@ -19,10 +20,12 @@ const LoginForm = () => {
   useEffect(() => {
     async function checkLogin() {
       const token = await AsyncStorage.getItem("token");
-      console.log(token);
+      const userId = await AsyncStorage.getItem("userId")
       try {
         if (token) {
+          const payload = {token, userId}
           navigation.replace("Home");
+          dispatch(addToken(payload));
         }
       } catch (error) {
         console.log(error);
@@ -39,9 +42,16 @@ const LoginForm = () => {
     });
   }
   async function loginWithPhoneNumberHandler(phoneNumber, password) {
-    const token = await loginAPI(phoneNumber, password);
+    const {token, userId} = await loginAPI(phoneNumber, password);
     await AsyncStorage.setItem("token", token);
+<<<<<<< HEAD
     if (token) {
+=======
+    await AsyncStorage.setItem("userId", userId);
+    if(token && userId){
+      const payload = {token, userId};
+      dispatch(addToken(payload));
+>>>>>>> db8fa5b00deecaf3c92b8401493558e570768e03
       navigation.navigate("Home");
     }
   }

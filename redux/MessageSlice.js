@@ -6,25 +6,18 @@ import {
   fetchMessagesAPI,
   sendFileMessageAPI,
 } from "../utils/api/MessageAPI";
-export const sendMessage = createAsyncThunk("sendMessage", async (params) => {
-  try {
-    const { conversationId, content } = params;
-    const messages = await sendMessageAPI(conversationId, content);
-    return messages;
-  } catch (error) {
-    console.log(error);
+export const sendFileMessage = createAsyncThunk(
+  "sendFileMessage",
+  async (params) => {
+    try {
+      const { conversationId, files } = params;
+      const message = await sendFileMessageAPI(conversationId, files);
+      return message;
+    } catch (error) {
+      console.log(error);
+    }
   }
-});
-export const sendFileMessage = createAsyncThunk("sendFileMessage", async(params) =>{
-  try {
-    const { conversationId, files } = params;
-    const message = await sendFileMessageAPI(conversationId, files);
-    console.log(message);
-    return message;
-  } catch (error) {
-    console.log(error);
-  }
-})
+);
 export const fetchMessages = createAsyncThunk(
   "fetchMessages",
   async (params) => {
@@ -41,47 +34,80 @@ const MessageSlice = createSlice({
   initialState: {
     listMessage: [],
     selectedMessage: {},
-    isLoader: false,
+    isLoading: false,
     isError: false,
+    shareConversation: [],
+    shareMessage: {},
+  },
+  reducers: {
+    addMessage: (state, action) => {
+      state.listMessage.push(action.payload);
+    },
+
+    deleteMessageOnlyMe: (state, action) => {
+      const messageId = action.payload;
+      const newList = state.listMessage.filter(
+        (message) => message._id !== messageId
+      );
+      state.listMessage = newList;
+    },
+    deleteMessage: (state, action) => {
+      const message = action.payload;
+      const messageId = message._id;
+      const newMessages = state.listMessage;
+      const messageDeleteIndex = newMessages.findIndex(
+        (message) => message._id === messageId
+      );
+      newMessages[messageDeleteIndex] = message;
+      state.listMessage = newMessages;
+    },
+    addShareCovnersation(state, action) {
+      const params = action.payload;
+      state.shareConversation.push(params);
+    },
+    removeShareConversation(state, action) {
+      const conversationId = action.payload;
+      const newShareConversation = state.shareConversation.filter(
+        (conversation) => conversation._id !== conversationId
+      );
+      state.shareConversation = [...newShareConversation];
+    },
+    getShareMessage(state, action) {
+      const messageId = action.payload;
+      console.log(messageId);
+      const messageIndex = state.listMessage.findIndex(
+        (message) => message._id.toString() === messageId.toString()
+      );
+      const findMessage = state.listMessage[messageIndex];
+      state.shareMessage = findMessage;
+    },
+    resetShare(state, action) {
+      state.shareConversation = [];
+      state.shareMessage = {};
+    },
   },
   extraReducers: (builder) => {
-    builder.addCase(sendMessage.pending, (state, action) => {
-      state.isLoader = true;
-    });
-    builder.addCase(sendMessage.fulfilled, (state, action) => {
-      state.isLoader = false;
-      state.listMessage.push(action.payload);
-    });
-    builder.addCase(sendMessage.rejected, (state, action) => {
-      state.isLoader = false;
-      state.isError = true;
-    });
     // get list
     builder.addCase(fetchMessages.pending, (state, action) => {
-      state.isLoader = true;
+      state.isLoading = true;
     });
     builder.addCase(fetchMessages.fulfilled, (state, action) => {
-      state.isLoader = false;
+      state.isLoading = false;
       state.listMessage = action.payload;
     });
     builder.addCase(fetchMessages.rejected, (state, action) => {
-      state.isLoader = false;
+      state.isLoading = false;
       state.isError = true;
     });
-    // send file message
-    builder.addCase(sendFileMessage.pending, (state, action) => {
-      state.isLoader = true;
-    });
-    builder.addCase(sendFileMessage.fulfilled, (state, action) => {
-      state.isLoader = false;
-      state.listMessage.push(action.payload);
-      console.log(action.payload);
-    });
-    builder.addCase(sendFileMessage.rejected, (state, action) => {
-      state.isLoader = false;
-      state.isError = true;
-    });
-  }
+  },
 });
-
+export const {
+  addMessage,
+  deleteMessage,
+  deleteMessageOnlyMe,
+  addShareCovnersation,
+  removeShareConversation,
+  getShareMessage,
+  resetShare,
+} = MessageSlice.actions;
 export default MessageSlice.reducer;
