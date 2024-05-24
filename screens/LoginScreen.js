@@ -6,10 +6,6 @@ import LoginForm from "../components/Login/LoginForm";
 const LoginScreen = ({ navigation }) => {
   return (
     <View style={styles.root}>
-      <View style={styles.titleContainer}>
-        <Text style={styles.signIn}>Sign in</Text>
-        <Text>Sign In Your Account</Text>
-      </View>
       <LoginForm />
       <Pressable onPress={() => navigation.navigate("RegisterForm")}>
         <Text>Don't have an account</Text>
@@ -27,6 +23,7 @@ const styles = StyleSheet.create({
     margin: 18,
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: 'white'
   },
   titleContainer: {
     justifyContent: "center",

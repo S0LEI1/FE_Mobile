@@ -1,4 +1,4 @@
-import { Alert, StyleSheet, Text, View } from "react-native";
+import { Alert, StyleSheet, Text, View, Image } from "react-native";
 import React, { useEffect, useState } from "react";
 import Input from "../UI/Input";
 import Button from "../UI/Button";
@@ -34,19 +34,20 @@ const LoginForm = () => {
     setInputValues((curInput) => {
       return {
         ...curInput,
-        [inputIdentifier]: enteredValue,  
+        [inputIdentifier]: enteredValue,
       };
     });
   }
   async function loginWithPhoneNumberHandler(phoneNumber, password) {
     const token = await loginAPI(phoneNumber, password);
     await AsyncStorage.setItem("token", token);
-    if(token){
+    if (token) {
       navigation.navigate("Home");
     }
   }
   return (
     <View style={styles.container}>
+      <Image style={{ width: 180, height: 150, marginBottom: 30 }} source={require('../../assets/chatchit.png')} />
       <Input
         title={"Phone number: "}
         placeholder={"Enter your phone number"}
